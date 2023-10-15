@@ -5,6 +5,7 @@ const Category = require('./models/categoryModel')
 const app = express()
 
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({extended: false}));
 
 
 //routes
@@ -32,6 +33,18 @@ app.get('/products', async(req,res)=>{
     }
 })
 
+// get product by ID
+
+app.get('/products/:id',async(req,res)=>{
+    try {
+        const {id} = req.params
+        const products = await Product.findById(id);
+        res.status(200).json(products)
+    } catch (error) {
+        res.status(500).json({message : error.message})
+    }
+})
+
 app.post('/products', async(req,res)=>{
     try {
         const product = await Product.create(req.body)
@@ -54,6 +67,39 @@ app.post('/category', async(req,res)=>{
     }
 })
 
+//update a product
+app.put('/products/:id', async(req,res)=>{
+    try {
+        const{id} = req.params;
+        const product = await Product.findByIdAndUpdate(id, req.body);
+        // cannot find product to update
+        if(!product){
+            return res.status(404).json({message : 'cannot find product with id'})
+        }
+        const updatedProduct = await Product.findById(id);
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message : error.message})
+    }
+})
+
+//delete a product
+
+app.delete('/products/:id', async(req,res)=>{
+    try {
+        const {id} = req.params;
+        const product = await Product.findByIdAndDelete(id, req.body);
+
+        if(!product){
+            return res.status(404).json({message : 'cannot find product with id'})
+        }
+        res.status(200).json(product)
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message : error.message})
+    }
+})
 
 mongoose.connect('mongodb+srv://appuser:hargureet@cluster06.908ay8x.mongodb.net/DressStore?retryWrites=true&w=majority')
 .then(()=>{
