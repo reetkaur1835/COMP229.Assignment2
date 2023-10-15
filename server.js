@@ -1,8 +1,10 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const Product = require('./models/productModel')
 const app = express()
 
-app.use(express.json)
+app.use(express.json({ limit: '50mb' }));
+
 
 //routes
 app.get('/', (req,res)=>{
@@ -13,9 +15,15 @@ app.get('/blog', (req,res)=>{
     res.send('Hello blog')
 })
 
-app.post('/product',(req,res)=>{
-    console.log(req.body)
-    res.send(req.body)
+app.post('/product', async(req,res)=>{
+    try {
+        const product = await Product.create(req.body)
+        res.status(200).json(product)
+        
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({message : error.message})
+    }
 })
 
 mongoose.connect('mongodb+srv://appuser:hargureet@cluster06.908ay8x.mongodb.net/DressStore?retryWrites=true&w=majority')

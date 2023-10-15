@@ -3,20 +3,28 @@ const mongoose = require('mongoose')
 const productSchema = mongoose.Schema(
     {
         name:{
-            type: String
+            type: String,
+            required: [true, "Please enter a product name"]
         },
         description: {
-            type: String
+            type: String,
+            required: true,
         },
         price:{
-            type: Number
+            type: Number,
+            required: true,
         },
         published: {
-            type: Boolean
+            type: Boolean,
+            required: true,
         },
         category: {
-            type: String
+            type: String,
+            required: true,
         }
+    },
+    {
+        timestamps: true
     }
 )
 
